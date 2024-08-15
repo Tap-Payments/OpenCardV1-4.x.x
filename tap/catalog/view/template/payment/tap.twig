@@ -1,0 +1,162 @@
+<html>
+<head>
+<link href="https://goSellJSLib.b-cdn.net/v1.6.1/css/gosell.css" rel="stylesheet" />
+</head>
+<body>
+<link href="https://goSellJSLib.b-cdn.net/v1.6.1/css/gosell.css" rel="stylesheet" />
+<script type="text/javascript" src="https://goSellJSLib.b-cdn.net/v1.6.1/js/gosell.js"></script>
+<div class="buttons">
+<form>
+  <div class="pull-right">
+    <input type="button" value="{{ button_confirm }}" id="button-confirm" class="btn btn-primary" />
+  </div>
+</form>
+<script type="text/javascript"><!--
+  // var congig_trans_mode = "{{payment_tap_charge_mode}}"
+  var ui_mode = "{{entry_ui_mode}}";
+  var payment_tap_charge_mode = "{{ entey_charge_mode }}";
+  var active_pk = '{{active_pk}}';
+  var order_id = '{{order_id}}';
+  var post_url = '{{entry_post_url}}';
+  var hash_string = '{{hashstring}}';
+  var amount = '{{amount}}';
+  var country_code = '{{cntry}}';
+  alert(country_code);
+alert(payment_tap_charge_mode);
+  console.log(payment_tap_charge_mode);
+  if (payment_tap_charge_mode === 'charge')
+    alert(payment_tap_charge_mode);
+          var object_trans = {
+              mode: 'charge',
+                charge:{
+                  saveCard: false,
+                  threeDSecure: true,
+                  description: "",
+                  statement_descriptor: "Sample",
+                  reference:{
+                    transaction: '',
+                    order: "{{ order_id }}"
+                  },
+                  metadata:{},
+                  receipt:{
+                    email: false,
+                    sms: true
+                  },                  
+                  redirect: "{{returnurl}}",
+
+                  post: "{{entry_post_url}}"
+                }
+              }
+
+
+               if (payment_tap_charge_mode == 'Authorize') {
+               var object_trans = {
+                    mode :'authorize',
+                    authorize:{
+                    auto:{
+                    type:'VOID',
+                     time: 100
+                      },
+                      saveCard: false,
+                      threeDSecure: true,
+                      description: "",
+                      statement_descriptor:"statement_descriptor",
+                      reference:{
+                      transaction: '',
+                      order: "{{ order_id }}"
+                        },
+                        hashstring:hash_string,
+                        metadata:{},
+                        receipt:{
+                            email: false,
+                            sms: true
+                        },
+                        redirect: "{{returnurl}}",
+                        post: "{{entry_post_url}}"
+                }
+              }
+            }
+
+
+
+
+
+
+  $('#button-confirm').on('click', function() {
+goSell.config({
+      gateway:{
+        publicKey:"{{ active_pk }}",
+        language:"en",
+        contactInfo:true,
+        supportedCurrencies:"all",
+        supportedPaymentMethods: "all",
+        saveCardOption:false,
+        customerCards: true,
+        notifications:'standard',
+        callback:(response) => {
+            console.log('response', response);
+        },
+        backgroundImg: {
+          url: 'imgURL',
+          opacity: '0.5'
+        },
+        labels:{
+            cardNumber:"Card Number",
+            expirationDate:"MM/YY",
+            cvv:"CVV",
+            cardHolder:"Name on Card",
+            actionButton:"Pay"
+        },
+        style: {
+            base: {
+              color: '#535353',
+              lineHeight: '18px',
+              fontFamily: 'sans-serif',
+              fontSmoothing: 'antialiased',
+              fontSize: '16px',
+              '::placeholder': {
+                color: 'rgba(0, 0, 0, 0.26)',
+                fontSize:'15px'
+              }
+            },
+            invalid: {
+              color: 'red',
+              iconColor: '#FA755A '
+            }
+        }
+      },
+      customer:{
+        id:"",
+        first_name: "{{cstname}}",
+        middle_name: "Middle Name",
+        last_name: "Last Name",
+        email: "{{cstemail}}",
+        phone: {
+            country_code: "{{cntry}}",
+            number: "{{cstmobile}}",
+        }
+      },
+      order:{
+        amount: "{{amount}}",
+        currency:"{{currencycode}}",
+        shipping:null,
+        taxes: null
+      },
+     transaction: object_trans
+    });
+if ( ui_mode == 'Popup') {
+
+    goSell.openLightBox();
+  }
+  else{
+    function everyTime() {
+    goSell.openPaymentPage();
+    console.log(ui_mode);
+    }
+var myInterval = setInterval(everyTime, 1000);
+    
+  }
+  });
+//--></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-payment" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save"></i></button>
+        <a href="{{ cancel }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> {{ success }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>    
+    {% endif %}
+    
+    <div>
+        {{ text_tap_image }}
+        <span style="margin-left:12px; line-height: 25px">{{ text_connect_tap }}</span><br/>
+        <span style="margin-left:12px; line-height: 25px">{{ text_tap_suppport }}</span>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil"></i> {{ text_edit }}</div>
+      <div class="card-body">
+        <form id="form-payment" action="{{ action }}" method="post">
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tap_status" id="input-status" class="form-control">
+                {% if payment_tap_status %}
+                  <option value="1" selected="selected">{{ text_enabled }}</option>
+                  <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                  <option value="1">{{ text_enabled }}</option>
+                  <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input_title"><span data-toggle="tooltip" title="{{ help_title }}">{{ entry_title }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_title" value="{{ payment_tap_title }}" id="input_title" class="form-control"/>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input_desc"><span data-toggle="tooltip" title="{{ help_desc }}">{{ entry_desc }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_desc" value="{{ payment_tap_desc }}" id="input_desc" class="form-control"/>
+            </div>
+          </div>  
+          <div class="row mb-3 required">
+            <label class="col-sm-2 control-label" for="input_testpublicapi_key"><span data-toggle="tooltip" title="{{ help_testpublicapi }}">{{ entry_testpublicapi_key }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_testpublicapi_key" value="{{ payment_tap_testpublicapi_key }}" id="input_testpublicapi_url" class="form-control"/>
+              {% if error_testpublicapi_key %}
+              <div class="text-danger">{{ error_testpublicapi_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3 required">
+            <label class="col-sm-2 control-label" for="input_testsecretapi_key"><span data-toggle="tooltip" title="{{ help_testsecretapi_key }}">{{ entry_testsecretapi_key }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_testsecretapi_key" value="{{ payment_tap_testsecretapi_key }}" id="input_testsecretapi_url" class="form-control"/>
+              {% if error_testsecretapi_key %}
+              <div class="text-danger">{{ error_testsecretapi_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3 required">
+            <label class="col-sm-2 control-label" for="input_livepublicapi_key"><span data-toggle="tooltip" title="{{ help_livepublicapi_key }}">{{ entry_livepublicapi_key }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_livepublicapi_key" value="{{ payment_tap_livepublicapi_key }}" id="input_livepublicapi_url" class="form-control"/>
+              {% if error_livepublicapi_key %}
+              <div class="text-danger">{{ error_livepublicapi_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3 required">
+            <label class="col-sm-2 control-label" for="input_livesecretapi_key"><span data-toggle="tooltip" title="{{ help_livesecretapi_key }}">{{ entry_livesecretapi_key }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_livesecretapi_key" value="{{ payment_tap_livesecretapi_key }}" id="input_livesecretapi_url" class="form-control"/>
+              {% if error_livesecretapi_key %}
+              <div class="text-danger">{{ error_livesecretapi_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" 
+            for="input-payment_tap_post_url">{{entry_post_url}}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_post_url" value="{{payment_tap_post_url}}" placeholder="{{entry_post_url}}"
+               id="input-payment_tap_post_url" class="form-control" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-charge-mode">{{entry_charge_mode}}</label>
+            <div class="col-sm-10">
+              <select name="payment_tap_charge_mode" id="input-charge-mode" class="form-control">
+                <option value="charge">Charge</option>
+                <option value="Authorize">Authroize</option>
+             {% for mode in modes %}
+                    <option value="{{mode}}}}" selected="selected"><{{mode}}</option>
+               {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-ui-mode">{{entry_ui_mode}}</label>
+            <div class="col-sm-10">
+              <select name="payment_tap_ui_mode" id="input-ui-mode" class="form-control">
+                <option value="Redirect">Redirect</option>
+                <option value="Popup">Popup</option>
+             {% for mode in modes %}
+                    <option value="{{mode}}}}" selected="selected"><{{mode}}</option>
+               {% endfor %}
+              </select>
+            </div>
+          </div> 
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-geo-zone">{{ entry_geo_zone }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tap_standard_geo_zone_id" id="input-geo-zone" class="form-control">
+                <option value="0">{{ text_all_zones }}</option>
+                {% for geo_zone in geo_zones %}
+                  {% if geo_zone.geo_zone_id == payment_tap_standard_geo_zone_id %}
+                    <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
+                  {% else %}
+                    <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+  <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-order-status">{{ entry_order_status }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tap_order_status_id" id="input-order-status" class="form-control">
+                {% for order_status in order_statuses %}
+                  {% if order_status.order_status_id == payment_tap_order_status_id %}
+                    <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                  {% else %}
+                    <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-debug">{{ entry_debug }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tap_debug" id="input-debug" class="form-control">
+                {% if payment_tap_debug %}
+                  <option value="1" selected="selected">{{ text_enabled }}</option>
+                  <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                  <option value="1">{{ text_enabled }}</option>
+                  <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>    
+          <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tap_sort_order" value="{{ payment_tap_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control"/>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
