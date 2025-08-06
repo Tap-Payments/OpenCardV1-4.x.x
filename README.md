@@ -14,7 +14,7 @@ This is a payment extension module for OpenCart 4.x that integrates the Tap paym
 ## 🔧 Installation
 1. **Download Files**
 
-	-Downlaod zip fronm github and rename them it to tap.ocmod.zip
+	-Downlaod zip fronm github and rename it to tap.ocmod.zip
 
 1. **Upload Files**
    - Go to installer from corner click upload and choose the renamed zip file that is tap.ocmod.zip .
