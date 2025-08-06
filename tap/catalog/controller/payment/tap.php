@@ -34,6 +34,12 @@ class tap extends \Opencart\System\Engine\Controller {
         $data['cstemail'] = $order_info['email'];
         $data['cstname'] = html_entity_decode($order_info['firstname'], ENT_QUOTES, 'UTF-8');
         $data['cstlastname'] = html_entity_decode($order_info['lastname'], ENT_QUOTES, 'UTF-8');
+        if ($data['entey_charge_mode'] == 'Authorize') {
+            $charge_url = 'https://api.tap.company/v2/authorize';
+        }
+        else {
+            $charge_url = 'https://api.tap.company/v2/charges';
+        }
          if (empty($data['cstmobile'])) {
             $data['cstmobile'] = '00000000';
          }
@@ -106,14 +112,72 @@ class tap extends \Opencart\System\Engine\Controller {
         else{
             $Total_price = number_format((float)$data['amount'], 2, '.', '');
         }
+        $timestamp = base_convert((string) round(microtime(true) * 1000), 10, 36);
+        $bytes = random_bytes(10);
+        $hexPart = bin2hex($bytes);
 
-        $amount = number_format((float)$data['amount'], 2, '.', '');
+        $prefix = 'oc_';
+        $request_id = "{$prefix}{$timestamp}_{$hexPart}";
+        $data['platform_id'] = 'commerce_platform_FBUl525647upGy8i94o169';
+        $amount = $Total_price;
         $Hash = 'x_publickey'.$active_pk.'x_amount'.$Total_price.'x_currency'.$data['currencycode'].'x_transaction'.$ref.'x_post'.$data['entry_post_url'];
         $data['hashstring'] = hash_hmac('sha256', $Hash, $active_sk);
         $data['returnurl'] = $this->url->link('extension/tap/payment/tap|callback');
+        $ui_language = $this->config->get('payment_tap_ui_language');
 
-         //echo '<pre>'; var_dump($data);exit;
-            return $this->load->view('extension/tap/payment/tap', $data);
+        $source_id = 'src_all';
+        $trans_object["amount"]                   = $amount;
+        $trans_object["currency"]                 = $data['currencycode'];
+        $trans_object["threeDsecure"]             = true;
+        $trans_object["save_card"]                = false;
+        $trans_object["description"]              = $data['ordid'];
+        $trans_object["statement_descriptor"]     = 'Sample';
+        $trans_object["metadata"]["requestId"]         = $request_id;
+        $trans_object["metadata"]["udf2"]         = 'test';
+        $trans_object["platform"]["id"] = 'commerce_platform_FBUl525647upGy8i94o169';
+        $trans_object["reference"]["transaction"] = $ref;
+        $trans_object["hashstring"]                     = $data['hashstring'];
+        $trans_object["reference"]["order"]       = $data['order_id'];
+        $trans_object["receipt"]["email"]         = false;
+        $trans_object["receipt"]["sms"]           = true;
+        $trans_object["customer"]["first_name"]   = $data['cstname'];
+        $trans_object["customer"]["last_name"]    = $data['cstlastname'];
+        $trans_object["customer"]["email"]        =  $data['cstemail'];
+        $trans_object["customer"]["phone"]["country_code"]  = $country_code;
+        $trans_object["customer"]["phone"]["number"] = $data['cstmobile'];
+        $trans_object["source"]["id"] = $source_id;
+        $trans_object["post"]["url"]  = $data['entry_post_url'];
+        $trans_object["redirect"]["url"] = $data['returnurl'];
+        $frequest = json_encode($trans_object, JSON_UNESCAPED_UNICODE);
+        $frequest = stripslashes($frequest);
+        
+        $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $charge_url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => $frequest,
+                CURLOPT_HTTPHEADER => array(
+                    "authorization: Bearer ".$active_sk,
+                    "content-type: application/json",
+                    "lang_code: " . $ui_language
+                ),
+            )
+        );
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $obj = json_decode($response);
+        $charge_id   = $obj->id;
+        $redirct_Url = $obj->transaction->url;
+        $data['redirect_url'] = $redirct_Url;
+        $data['redirect_url'] = $redirct_Url;
+        return $this->load->view('extension/tap/payment/tap', $data);
+
 	}
 
     public function callback() {
@@ -121,8 +185,6 @@ class tap extends \Opencart\System\Engine\Controller {
         $this->load->language('extension/tap/payment/tap');
         if (isset($this->request->get['tap_id'])) {
             $tap_id = $this->request->get['tap_id'];
-            // $order_info = $this->model_checkout_order->getOrder(17);
-            //$order_id = $this->session->data['order_id'];
           
         } 
         else {

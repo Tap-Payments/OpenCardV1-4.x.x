@@ -137,11 +137,11 @@ class Tap extends \Opencart\System\Engine\Controller {
                 $data['payment_tap_charge_mode'] = $this->config->get('payment_tap_charge_mode');
                 }
 
-        if (isset($this->request->post['payment_tap_ui_mode'])) {
-                $data['payment_tap_ui_mode'] = $this->request->post['payment_tap_ui_mode'];
-        } else {
-                $data['payment_tap_ui_mode'] = $this->config->get('payment_tap_ui_mode');
-                }
+        // if (isset($this->request->post['payment_tap_ui_mode'])) {
+        //         $data['payment_tap_ui_mode'] = $this->request->post['payment_tap_ui_mode'];
+        // } else {
+        //         $data['payment_tap_ui_mode'] = $this->config->get('payment_tap_ui_mode');
+        //         }
 
         if (isset($this->request->post['payment_tap_title'])) {
                 $data['payment_tap_title'] = $this->request->post['payment_tap_title'];
